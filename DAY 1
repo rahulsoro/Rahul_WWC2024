@@ -1,0 +1,72 @@
+Problem 1: Sum of N natural numbers
+
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    int n, sum = 0;
+
+    cout << "Enter a positive integer: ";
+    cin >> n;
+
+    for (int i = 1; i <= n; ++i) {
+        sum += i;
+    }
+
+    cout << "Sum = " << sum << endl;
+
+    return 0;
+}
+
+Problem 2: Prime or not
+
+#include <iostream>
+
+using namespace std;
+
+bool isPrime(int num) {
+    if (num <= 1) {
+        return false;
+    }
+    for (int i = 2; i * i <= num; ++i) {
+        if (num % i == 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+int main() {
+    int num;
+
+    cout << "Enter a positive integer: ";
+    cin >> num;
+
+    if (isPrime(num)) {
+        cout << num << " is a prime number." << endl;
+    } else {
+        cout << num << " is not a prime number." << endl;
+    }
+
+    return 0;
+}
+
+Problem: 3 Data
+
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    cout << "Name: rahul" << endl;
+    cout << "UID: 22BCS10149" << endl;
+    cout << "Section: 630 A" << endl;
+    cout << "Area of Interest: wrestling" << endl;
+    cout << "Age: [19]" << endl;
+    cout << "Last Year CGPA: 7.8" << endl;
+    cout << "DOB: 08/09/2003" << endl;
+    cout << "Hometown: Palwal, Haryana" << endl;
+
+    return 0;
+}
