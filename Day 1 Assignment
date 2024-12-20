@@ -1,0 +1,226 @@
+Question for assignment Day 1:    
+Develop a Warehouse Inventory Management System using C++ to simulate how industries manage and track their inventory. The program should enable users to add new items to the inventory, update stock levels, track inventory movement, and generate reports. 
+Each item in the inventory should be represented as an object with attributes like a unique item ID, name, category, quantity, and reorder level. The system should include functionality to alert the user when stock levels fall below the reorder threshold. A menu-driven 
+interface should allow users to perform operations such as viewing inventory, searching for items by name or category, and exporting inventory data to a file for record-keeping. This assignment is designed to mirror real-world inventory management systems used in
+industries like retail, manufacturing, and logistics, providing hands-on experience with object-oriented design, file handling, and user interaction in C++.
+
+
+CODE:
+
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <iomanip>
+using namespace std;
+
+// Class representing an inventory item
+class InventoryItem {
+private:
+    int itemID;
+    string name;
+    string category;
+    int quantity;
+    int reorderLevel;
+
+public:
+    // Constructor
+    InventoryItem(int id, string itemName, string itemCategory, int qty, int reorder)
+        : itemID(id), name(itemName), category(itemCategory), quantity(qty), reorderLevel(reorder) {}
+
+    // Getters
+    int getItemID() const { return itemID; }
+    string getName() const { return name; }
+    string getCategory() const { return category; }
+    int getQuantity() const { return quantity; }
+    int getReorderLevel() const { return reorderLevel; }
+
+    // Methods to update quantity
+    void addStock(int qty) { quantity += qty; }
+    void removeStock(int qty) { quantity -= qty; }
+
+    // Display item details
+    void displayItem() const {
+        cout << left << setw(10) << itemID << setw(20) << name << setw(15) << category
+             << setw(10) << quantity << setw(15) << reorderLevel << endl;
+    }
+
+    // Check if stock is below reorder level
+    bool isBelowReorderLevel() const {
+        return quantity < reorderLevel;
+    }
+
+    // Export item data as a string
+    string exportData() const {
+        return to_string(itemID) + "," + name + "," + category + "," +
+               to_string(quantity) + "," + to_string(reorderLevel) + "\n";
+    }
+};
+
+// Inventory Management System
+class InventoryManagementSystem {
+private:
+    vector<InventoryItem> inventory;
+    int nextItemID;
+
+public:
+    // Constructor
+    InventoryManagementSystem() : nextItemID(1) {}
+
+    // Add a new item to the inventory
+    void addItem() {
+        string name, category;
+        int quantity, reorderLevel;
+
+        cout << "Enter item name: ";
+        cin.ignore();
+        getline(cin, name);
+        cout << "Enter item category: ";
+        getline(cin, category);
+        cout << "Enter quantity: ";
+        cin >> quantity;
+        cout << "Enter reorder level: ";
+        cin >> reorderLevel;
+
+        inventory.emplace_back(nextItemID++, name, category, quantity, reorderLevel);
+        cout << "Item added successfully!\n";
+    }
+
+    // Update stock levels
+    void updateStock() {
+        int id, qty;
+        char choice;
+
+        cout << "Enter item ID: ";
+        cin >> id;
+
+        for (auto& item : inventory) {
+            if (item.getItemID() == id) {
+                cout << "Enter quantity to add (+) or remove (-): ";
+                cin >> qty;
+                if (qty > 0)
+                    item.addStock(qty);
+                else
+                    item.removeStock(-qty);
+
+                cout << "Stock updated successfully!\n";
+                return;
+            }
+        }
+
+        cout << "Item with ID " << id << " not found.\n";
+    }
+
+    // View all items in the inventory
+    void viewInventory() const {
+        if (inventory.empty()) {
+            cout << "Inventory is empty.\n";
+            return;
+        }
+
+        cout << left << setw(10) << "ItemID" << setw(20) << "Name" << setw(15) << "Category"
+             << setw(10) << "Quantity" << setw(15) << "Reorder Level" << endl;
+        cout << string(70, '-') << endl;
+
+        for (const auto& item : inventory) {
+            item.displayItem();
+        }
+    }
+
+    // Search for items by name or category
+    void searchItems() const {
+        string query;
+        char type;
+
+        cout << "Search by name (n) or category (c): ";
+        cin >> type;
+        cin.ignore();
+        cout << "Enter search query: ";
+        getline(cin, query);
+
+        cout << left << setw(10) << "ItemID" << setw(20) << "Name" << setw(15) << "Category"
+             << setw(10) << "Quantity" << setw(15) << "Reorder Level" << endl;
+        cout << string(70, '-') << endl;
+
+        for (const auto& item : inventory) {
+            if ((type == 'n' && item.getName() == query) ||
+                (type == 'c' && item.getCategory() == query)) {
+                item.displayItem();
+            }
+        }
+    }
+
+    // Generate a reorder alert
+    void generateReorderAlert() const {
+        bool alertGenerated = false;
+
+        for (const auto& item : inventory) {
+            if (item.isBelowReorderLevel()) {
+                if (!alertGenerated) {
+                    cout << "Reorder Alert: The following items need restocking:\n";
+                    cout << left << setw(10) << "ItemID" << setw(20) << "Name" << setw(15) << "Category"
+                         << setw(10) << "Quantity" << setw(15) << "Reorder Level" << endl;
+                    cout << string(70, '-') << endl;
+                    alertGenerated = true;
+                }
+                item.displayItem();
+            }
+        }
+
+        if (!alertGenerated) {
+            cout << "All items are above their reorder levels.\n";
+        }
+    }
+
+    // Export inventory data to a file
+    void exportToFile() const {
+        ofstream file("inventory_data.csv");
+        if (!file) {
+            cout << "Error creating file.\n";
+            return;
+        }
+
+        file << "ItemID,Name,Category,Quantity,Reorder Level\n";
+        for (const auto& item : inventory) {
+            file << item.exportData();
+        }
+
+        file.close();
+        cout << "Inventory data exported successfully to 'inventory_data.csv'.\n";
+    }
+};
+
+// Menu-driven interface
+void displayMenu() {
+    cout << "\n=== Warehouse Inventory Management System ===\n";
+    cout << "1. Add New Item\n";
+    cout << "2. Update Stock\n";
+    cout << "3. View Inventory\n";
+    cout << "4. Search Items\n";
+    cout << "5. Generate Reorder Alerts\n";
+    cout << "6. Export Inventory Data\n";
+    cout << "7. Exit\n";
+    cout << "Enter your choice: ";
+}
+
+int main() {
+    InventoryManagementSystem ims;
+    int choice;
+
+    do {
+        displayMenu();
+        cin >> choice;
+
+        switch (choice) {
+            case 1: ims.addItem(); break;
+            case 2: ims.updateStock(); break;
+            case 3: ims.viewInventory(); break;
+            case 4: ims.searchItems(); break;
+            case 5: ims.generateReorderAlert(); break;
+            case 6: ims.exportToFile(); break;
+            case 7: cout << "Exiting the program.\n"; break;
+            default: cout << "Invalid choice. Try again.\n";
+        }
+    } while (choice != 7);
+
+    return 0;
+}
