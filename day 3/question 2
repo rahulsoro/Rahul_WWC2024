@@ -1,0 +1,41 @@
+
+Elimination Game
+You have a list arr of all integers in the range [1, n] sorted in a strictly increasing order. Apply the following algorithm on arr:
+ Starting from left to right, remove the first number and every other number afterward until you reach the end of the list.
+Repeat the previous step again, but this time from right to left, remove the rightmost number and every other number from the remaining numbers.
+Keep repeating the steps again, alternating left to right and right to left, until a single number remains.
+
+#include <vector>
+
+using namespace std;
+
+int lastRemaining(int n) {
+    bool leftToRight = true;
+    vector<int> arr(n);
+
+    // Initialize the array with numbers 1 to n
+    for (int i = 0; i < n; i++) {
+        arr[i] = i + 1;
+    }
+
+    while (arr.size() > 1) {
+        vector<int> temp;
+
+        if (leftToRight) {
+            // Remove every other number from left to right
+            for (int i = 0; i < arr.size(); i += 2) {
+                temp.push_back(arr[i]);
+            }
+        } else {
+            // Remove every other number from right to left
+            for (int i = arr.size() - 1; i >= 0; i -= 2) {
+                temp.push_back(arr[i]);
+            }
+        }
+
+        arr = temp;
+        leftToRight = !leftToRight; // Toggle direction
+    }
+
+    return arr[0]; // Return the single remaining number
+}
