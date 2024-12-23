@@ -1,0 +1,102 @@
+Add Two Numbers
+You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.You may assume the two numbers do not contain any leading zero, except the number 0 itself.
+
+#include <iostream>
+using namespace std;
+
+class Node {
+public:
+    int data;
+    Node* next;
+
+    Node(int val) {
+        data = val;
+        next = nullptr;
+    }
+};
+
+// Function to reverse a linked list
+Node* reverse(Node* head) {
+    Node* prev = nullptr;
+    Node* curr = head;
+    Node* next;
+    while (curr != nullptr) {
+        next = curr->next;
+        curr->next = prev;
+        prev = curr;
+        curr = next;
+    }
+    return prev;
+}
+
+// Function to add two numbers represented by linked lists
+Node* addTwoLists(Node* num1, Node* num2) {
+    Node* res = nullptr;
+    Node* curr = nullptr;
+    int carry = 0;
+
+    // Reverse both lists to start addition from the least significant digit
+    num1 = reverse(num1);
+    num2 = reverse(num2);
+
+    // Iterate till eitherof the lists becomes empty or carry is not zero
+    while (num1 != nullptr || num2 != nullptr || carry != 0) {
+        int sum = carry;
+
+        // Add digits of current nodes (if they exist)
+        if (num1 != nullptr) {
+            sum += num1->data;
+            num1 = num1->next;
+        }
+        if (num2 != nullptr) {
+            sum += num2->data;
+            num2 = num2->next;
+        }
+
+        // Create a new node for the result list
+        Node* newNode = new Node(sum % 10);
+
+        // Update carry for the next iteration
+        carry = sum / 10;
+
+        // Link the new node to the result list
+        if (res == nullptr) {
+            res = newNode;
+        } else {
+            curr->next = newNode;
+        }
+        curr = newNode;
+    }
+
+    // Reverse the result list back to the original order
+    return reverse(res);
+}
+
+// Function to print a linked list
+void printList(Node* head) {
+    while (head != nullptr) {
+        cout << head->data << " ";
+        head = head->next;
+    }
+    cout << endl;
+}
+
+int main() {
+    // Create linked lists for numbers 2->4->3 and 5->6->4
+    Node* num1 = new Node(3);
+    num1->next = new Node(4);
+    num1->next->next = new Node(2);
+
+    Node* num2 = new Node(4);
+    num2->next = new Node(6);
+    num2->next->next = new Node(5);
+
+    // Add the two numbers
+    Node* result = addTwoLists(num1, num2);
+
+    // Print the result
+    cout << "Sum of lists: ";
+    printList(result);
+
+    return 0;
+}
